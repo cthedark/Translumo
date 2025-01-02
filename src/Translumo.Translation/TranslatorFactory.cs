@@ -6,6 +6,7 @@ using Translumo.Translation.Configuration;
 using Translumo.Translation.Deepl;
 using Translumo.Translation.Google;
 using Translumo.Translation.Yandex;
+using Translumo.Translation.Local;
 
 namespace Translumo.Translation
 {
@@ -32,6 +33,8 @@ namespace Translumo.Translation
                     return new YandexTranslator(translatorConfiguration, _languageService, _actionDispatcher, _logger);
                 case Translators.Google:
                     return new GoogleTranslator(translatorConfiguration, _languageService, _logger);
+                case Translators.Local:
+                    return new LocalTranslator(translatorConfiguration, _languageService, _logger);
                 default:
                     throw new NotSupportedException();
             }

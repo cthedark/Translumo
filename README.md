@@ -4,7 +4,7 @@
 <p align="center">
   <img width="670" src="https://github.com/Danily07/Translumo/assets/29047281/8985049f-ea1c-428e-94be-042ece66cb54">
 </p>
-<p align="center"><b>EN</b> | <a href="docs/README-RU.md"><b>RU</b></a></p>
+<!-- <p align="center"><b>EN</b> | <a href="docs/README-RU.md"><b>RU</b></a></p> -->
 <p align="center">Advanced screen translator. <b>Translumo</b> is able to detect and translate appearing in the selected area text in real-time (e.g. subtitles).</p>
 <p align="center">Fork from <a href="https://github.com/Danily07/Translumo">Danily07</a></p>
 <h1>Main features</h1>
@@ -19,7 +19,7 @@
   <li><b>Low latency</b></li>
   There are several implemented optimizations to reduce impact on system performance and minimize latency between the moment a text appears and actual translation. 
   <li><b>Integrated modern OCR engines:</b> Tesseract 5.2, WindowsOCR, EasyOCR</li>
-  <li><b>Available translators:</b> Google Translate, Yandex translate, DeepL (Papago is removed as it's now a paid service from ncloud)</li>
+  <li><b>Available translators:</b> Google Translate, Yandex Translate, DeepL, Locally run <a href="https://github.com/LibreTranslate/LibreTranslate" target="_blank">LibreTranslate</a> (Papago is removed as it's now a paid service from ncloud)</li>
   <li><b>Available recognition languages:</b> English, Russian, Japanese, Chinese (simplified), Korean</li>
   <li><b>Available translation languages:</b> English, Russian, Japanese, Chinese (simplified), Korean, French, Spanish, German, Portuguese, Italian, Vietnamese, Thai, Turkish, Arabic</li>
 </ul>

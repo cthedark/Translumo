@@ -189,7 +189,7 @@ namespace Translumo.Processing
 
                         _textResultCacheService.EndIteration();
 
-                        var faultedTask = activeTranslationTasks.FirstOrDefault(t => t.IsFaulted);D
+                        var faultedTask = activeTranslationTasks.FirstOrDefault(t => t.IsFaulted);
                         activeTranslationTasks.RemoveAll(task => task.IsCompleted);
                         if (faultedTask != null)
                         {

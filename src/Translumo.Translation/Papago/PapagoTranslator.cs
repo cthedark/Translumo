@@ -9,6 +9,7 @@ using Translumo.Translation.Configuration;
 using Translumo.Translation.Exceptions;
 using Translumo.Utils.Extensions;
 
+// Papago's free API service has ended. Code is here but this won't work at all. The enum is removed.
 namespace Translumo.Translation.Papago
 {
     public sealed class PapagoTranslator : BaseTranslator<PapagoContainer>

@@ -19,7 +19,7 @@
   <li><b>Low latency</b></li>
   There are several implemented optimizations to reduce impact on system performance and minimize latency between the moment a text appears and actual translation. 
   <li><b>Integrated modern OCR engines:</b> Tesseract 5.2, WindowsOCR, EasyOCR</li>
-  <li><b>Available translators:</b> Google Translate, Yandex translate, Naver Papago, DeepL</li>
+  <li><b>Available translators:</b> Google Translate, Yandex translate, DeepL (Papago is removed as it's now a paid service from ncloud)</li>
   <li><b>Available recognition languages:</b> English, Russian, Japanese, Chinese (simplified), Korean</li>
   <li><b>Available translation languages:</b> English, Russian, Japanese, Chinese (simplified), Korean, French, Spanish, German, Portuguese, Italian, Vietnamese, Thai, Turkish, Arabic</li>
 </ul>

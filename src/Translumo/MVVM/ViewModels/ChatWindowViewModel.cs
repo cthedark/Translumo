@@ -224,6 +224,7 @@ namespace Translumo.MVVM.ViewModels
             Model.AddChatItem(GetHotKeyHelpText(nameof(configuration.SettingVisibilityKey), "Str.Hotkeys.SettingsShowHelp"), TextTypes.Info);
             Model.AddChatItem(GetHotKeyHelpText(nameof(configuration.SelectAreaKey), "Str.Hotkeys.SelectAreaHelp"), TextTypes.Info);
             Model.AddChatItem(GetHotKeyHelpText(nameof(configuration.TranslationStateKey), "Str.Hotkeys.OnTranslationHelp"), TextTypes.Info);
+            Model.AddChatItem(GetHotKeyHelpText(nameof(configuration.OnceTranslateKey), "Str.Hotkeys.OnceTranslationHelp"), TextTypes.Info);
         }
     }
 }

@@ -43,6 +43,7 @@
     <system:String x:Key="Str.Hotkeys.SettingsShowHelp">Press '{0}' to open the Settings</system:String>
     <system:String x:Key="Str.Hotkeys.SelectAreaHelp">Press '{0}' to select detection area</system:String>
     <system:String x:Key="Str.Hotkeys.OnTranslationHelp">Press '{0}' to start translation</system:String>
+    <system:String x:Key="Str.Hotkeys.OnceTranslationHelp">Press '{0}' to translate once</system:String>
     <system:String x:Key="Str.Hotkeys.GeneralHelp">To control the app use context menu from tray or following hotkeys:</system:String>
 
     <!--Appearance settings-->

@@ -57,6 +57,7 @@ namespace Translumo.MVVM.ViewModels
             hotKeysManager.SettingVisibilityKeyPressed += HotKeysManagerOnSettingVisibilityKeyPressed;
             hotKeysManager.ShowSelectionAreaKeyPressed += HotKeysManagerOnShowSelectionAreaKeyPressed;
             hotKeysManager.OnceTranslateKeyPressed += HotKeysManagerOnOnceTranslateKeyPressed;
+            hotKeysManager.OnceTranslateSelectedAreaKeyPressed += HotKeysManagerOnOnceTranslateSelectedAreaKeyPressed;
             hotKeysManager.WindowStyleChangeKeyPressed += HotKeysManagerOnWindowStyleChangeKeyPressed;
             chatTextMediator.TextRaised += ChatTextMediatorOnTextRaised;
             chatTextMediator.ClearTextsRaised += ChatTextMediatorOnClearTextsRaised;
@@ -128,6 +129,23 @@ namespace Translumo.MVVM.ViewModels
             {
                 Model.OnceTranslation(window.SelectedArea);
             }
+        }
+
+        private void HotKeysManagerOnOnceTranslateSelectedAreaKeyPressed(object sender, EventArgs e)
+        {
+            // CTHEDARK
+            if (_dialogService.WindowIsOpened<SettingsViewModel>())
+            {
+                Model.AddChatItem(LocalizationManager.GetValue("Str.Chat.SettingsOpened"), TextTypes.Info);
+
+                return;
+            }
+
+            if (!Model.CaptureConfiguration.CaptureArea.IsEmpty) 
+            {
+                Model.OnceTranslation(Model.CaptureConfiguration.CaptureArea);
+            }
+            
         }
 
         private void HotKeysManagerOnWindowStyleChangeKeyPressed(object sender, EventArgs e)

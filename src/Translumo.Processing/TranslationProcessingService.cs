@@ -311,6 +311,7 @@ namespace Translumo.Processing
         private void TranslateOnceInternal(RectangleF captureArea)
         {
             const int TRANSLATION_TIMEOUT_MS = 10000;
+            _logger.LogTrace($"Translate once with defined capturedArea {captureArea}");
 
             if (_onceTimeCapturer == null)
             {
@@ -333,6 +334,7 @@ namespace Translumo.Processing
                     // TODO: sometimes one of task (win tts) is not complete long time and translation is not working
                     Task.WaitAll(taskResults);
                     TextDetectionResult bestDetected = GetBestDetectionResult(taskResults, 3);
+                    _logger.LogTrace($"Translation request added (once) with text '{bestDetected.Text}'");
                     translationTask = TranslateTextAsync(bestDetected.Text, Guid.NewGuid());
                 }
 

@@ -5,6 +5,8 @@
 
 # large artifacts
 ext_components/
+models/
+python/
 
 # User-specific files
 *.rsuser

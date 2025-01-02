@@ -6,6 +6,7 @@
 </p>
 <p align="center"><b>EN</b> | <a href="docs/README-RU.md"><b>RU</b></a></p>
 <p align="center">Advanced screen translator. <b>Translumo</b> is able to detect and translate appearing in the selected area text in real-time (e.g. subtitles).</p>
+<p align="center">Fork from <a href="https://github.com/Danily07/Translumo">Danily07</a></p>
 <h1>Main features</h1>
 <ul>
   <li><b>High text recognition precision</b></li>
@@ -77,7 +78,7 @@ Generally, I recommend always keep Windows OCR turned on. This is the most effec
   <li>Clone repository (<b>master</b> branch always equals last release version):</li>
   
 ```bash
-git clone https://github.com/Danily07/Translumo.git
+git clone https://github.com/cthedark/Translumo.git
 ```
   <li>Restore packages and build a solution. <b>binaries_extract.bat</b> will be executed during building, which will automatically download models and python binaries to target output directory.</li>
 </ul>

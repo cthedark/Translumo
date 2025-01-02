@@ -121,7 +121,7 @@ namespace Translumo.Processing
         // This creates the repeating task of translating.
         private void TranslateInternal(CancellationToken cancellationToken)
         {
-            const int MAX_TRANSLATE_TASK_POOL = 1;
+            const int MAX_TRANSLATE_TASK_POOL = 2;
             const int SEQUENTIAL_DIFF_LETTERS = 3;
 
             IOCREngine primaryOcr = _engines.OrderByDescending(e => e.PrimaryPriority).First();
@@ -198,6 +198,7 @@ namespace Translumo.Processing
 
                         if (activeTranslationTasks.Count >= MAX_TRANSLATE_TASK_POOL)
                         {
+                            _logger.LogTrace($"Max task count reached - no-op");
                             continue;
                         }
 
@@ -206,6 +207,7 @@ namespace Translumo.Processing
                         lastIterationType = IterationType.Short;
                         if (primaryDetected.ValidityScore == 0 || _textResultCacheService.IsCached(primaryDetected.Text, sequentialText))
                         {
+                            _logger.LogTrace($"PrimaryCheck no-op;");
                             continue;
                         }
 
@@ -218,7 +220,7 @@ namespace Translumo.Processing
                                 {
                                     sequentialText = true;
                                 }
-
+                                _logger.LogTrace($"SecondaryCheck no-op");
                                 continue;
                             }
                         }
@@ -236,7 +238,7 @@ namespace Translumo.Processing
                         if (bestDetected.ValidityScore <= MIN_SCORE_THRESHOLD)
                         {
                             sequentialText = false;
-                            _logger.LogInformation($"Detection score threshold not met '{bestDetected.ValidityScore}';");
+                            _logger.LogTrace($"Detection score threshold not met '{bestDetected.ValidityScore}';");
                             continue;
                         }
 
@@ -244,7 +246,7 @@ namespace Translumo.Processing
                                 bestDetected.Language.Asian, out iterationId))
                         {
                             sequentialText = false;
-                            _logger.LogInformation($"Cache Hit");
+                            _logger.LogTrace($"Cache Hit");
                             continue;
                         }
 
@@ -256,8 +258,19 @@ namespace Translumo.Processing
                             textToBeTranslated = textToBeTranslated.Replace(lastDetectedText, "");
                         }
 
+                        // Remove non-language characters common in japanese visual novels (just in case it confuses the translators.)
+                        textToBeTranslated = textToBeTranslated
+                            .Replace("「", "").Replace("」", "").Replace("。", ".").Replace("、", ",")
+                            .Replace("ー", "-").Replace("ー", "-");
+
+                        // Nothing to translate (complete duplicate from the last query)
+                        if (string.IsNullOrWhiteSpace(textToBeTranslated)) {
+                            _logger.LogTrace($"empty string to translate - skipping;");
+                            continue;
+                        }
+
                         //resultLogger.LogResults(detectedResults.Select(res => res.Result), screenshot);
-                        _logger.LogInformation($"Adding translation request for '{textToBeTranslated}';");
+                        _logger.LogTrace($"Adding translation request for '{textToBeTranslated}';");
                         activeTranslationTasks.Add(TranslateTextAsync(textToBeTranslated, iterationId));
                         lastDetectedText = bestDetected.Text;
                     }

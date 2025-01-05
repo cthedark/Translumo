@@ -52,6 +52,12 @@ namespace Translumo.Processing
         private long _lastTranslatedTextTicks;
 
         private const float MIN_SCORE_THRESHOLD = 2.1f;
+
+        private const int CHAR_LENGTH_NOTICE = 5000; // send a text telling the user how many characters were translated in this session every N chars.
+
+        private int _totalCharSentForTranslation = 0;
+
+        private string _lastDetectedText = "";
         
         public TranslationProcessingService(ICapturerFactory capturerFactory, IChatTextMediator chatTextMediator, OcrEnginesFactory ocrEnginesFactory,
             TranslatorFactory translationFactory, TtsFactory ttsFactory, TtsConfiguration ttsConfiguration,
@@ -253,25 +259,9 @@ namespace Translumo.Processing
                         sequentialText = false;
 
                         // Remove the portion that is already translated
-                        var textToBeTranslated = bestDetected.Text;
-                        if (!string.IsNullOrWhiteSpace(lastDetectedText)) {
-                            textToBeTranslated = textToBeTranslated.Replace(lastDetectedText, "");
-                        }
-
-                        // Remove non-language characters common in japanese visual novels (just in case it confuses the translators.)
-                        textToBeTranslated = textToBeTranslated
-                            .Replace("「", "").Replace("」", "").Replace("。", ".").Replace("、", ",")
-                            .Replace("ー", "-").Replace("ー", "-");
-
-                        // Nothing to translate (complete duplicate from the last query)
-                        if (string.IsNullOrWhiteSpace(textToBeTranslated)) {
-                            _logger.LogTrace($"empty string to translate - skipping;");
-                            continue;
-                        }
-
-                        //resultLogger.LogResults(detectedResults.Select(res => res.Result), screenshot);
-                        _logger.LogTrace($"Adding translation request for '{textToBeTranslated}';");
-                        activeTranslationTasks.Add(TranslateTextAsync(textToBeTranslated, iterationId));
+                        var filteredResult = FilterAndLogResult(bestDetected.Text);                        
+                        activeTranslationTasks.Add(TranslateTextAsync(filteredResult, iterationId));
+                        
                         lastDetectedText = bestDetected.Text;
                     }
                 }
@@ -326,7 +316,7 @@ namespace Translumo.Processing
 
             try
             {
-                Task translationTask;
+                Task translationTask = null;
                 lock (_obj)
                 {
                     byte[] screenshot = _onceTimeCapturer.CaptureScreen(captureArea);
@@ -334,11 +324,15 @@ namespace Translumo.Processing
                     // TODO: sometimes one of task (win tts) is not complete long time and translation is not working
                     Task.WaitAll(taskResults);
                     TextDetectionResult bestDetected = GetBestDetectionResult(taskResults, 3);
-                    _logger.LogTrace($"Translation request added (once) with text '{bestDetected.Text}'");
-                    translationTask = TranslateTextAsync(bestDetected.Text, Guid.NewGuid());
+                    var filteredResult = FilterAndLogResult(bestDetected.Text);
+                    if (!string.IsNullOrWhiteSpace(filteredResult)) {
+                        translationTask = TranslateTextAsync(FilterAndLogResult(bestDetected.Text), Guid.NewGuid());
+                    }
                 }
 
-                translationTask.Wait(TRANSLATION_TIMEOUT_MS);
+                if (translationTask != null) {
+                    translationTask.Wait(TRANSLATION_TIMEOUT_MS);
+                }
             }
             catch (CaptureException ex)
             {
@@ -445,6 +439,36 @@ namespace Translumo.Processing
         private void OcrGeneralConfigurationOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             _engines = InitializeEngines();
+        }
+
+        private string FilterAndLogResult(string resultText) {
+            // Remove the portion that is already translated
+            var textToBeTranslated = resultText;
+            if (!string.IsNullOrWhiteSpace(_lastDetectedText)) {
+                textToBeTranslated = textToBeTranslated.Replace(_lastDetectedText, "");
+            }
+
+            // Remove non-language characters common in japanese visual novels (just in case it confuses the translators.)
+            textToBeTranslated = textToBeTranslated
+                .Replace("「", "").Replace("」", "").Replace("。", ".").Replace("、", ",")
+                .Replace("ー", "-").Replace("ー", "-");
+
+            // Nothing to translate (complete duplicate from the last query)
+            if (string.IsNullOrWhiteSpace(textToBeTranslated)) {
+                _logger.LogTrace($"empty string to translate - skipping;");
+                return "";
+            }
+                        
+            int roundedTotalCharSentBefore = _totalCharSentForTranslation / CHAR_LENGTH_NOTICE;
+            _totalCharSentForTranslation += textToBeTranslated.Length;
+            int roundedTotalCharSentAfter = _totalCharSentForTranslation / CHAR_LENGTH_NOTICE;
+            
+            _logger.LogTrace($"Adding translation request for '{textToBeTranslated}'. Total characters sent to translation: {_totalCharSentForTranslation}.");
+            if (roundedTotalCharSentAfter > roundedTotalCharSentBefore) {
+                _chatTextMediator.SendText($"({_totalCharSentForTranslation} characters sent to translation so far)", true);
+            }
+
+            return textToBeTranslated;
         }
 
         private IEnumerable<IOCREngine> InitializeEngines()

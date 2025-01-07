@@ -5,7 +5,9 @@
 
 # large artifacts
 ext_components/
-models/
+easyocr/
+prediction/
+tessdata/
 python/
 
 # User-specific files

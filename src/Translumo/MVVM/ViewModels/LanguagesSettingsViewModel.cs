@@ -28,6 +28,8 @@ namespace Translumo.MVVM.ViewModels
         public event EventHandler<bool> PanelStateIsChanged;
 
         public IList<DisplayLanguage> AvailableLanguages { get; set; }
+
+        public IList<LocalDBDir> AvailableDBDirs { get; set; }
         public IList<DisplayLanguage> AvailableTranslationLanguages { get; set; }
 
         public TranslationConfiguration Model { get; set; }
@@ -80,6 +82,16 @@ namespace Translumo.MVVM.ViewModels
             }
         }
 
+        public LocalDBDir UseLocalDBDir
+        {
+            get => _useLocalDBDir;
+            set
+            {
+                _useLocalDBDir = value;
+                Model.UseLocalDBDir = _useLocalDBDir.Value;
+            } 
+        }
+
         public ICommand ProxySettingsClickedCommand => new RelayCommand(OnProxySettingsClicked);
         public ICommand ProxyItemDeletedCommand => new RelayCommand<ProxyCardItem>(OnProxyItemDeletedCommand);
         public ICommand ProxyItemAddCommand => new RelayCommand(OnProxyItemAddCommand);
@@ -87,6 +99,7 @@ namespace Translumo.MVVM.ViewModels
 
         private ObservableCollection<ProxyCardItem> _proxyCollection;
         private bool _proxySettingsIsOpened;
+        private LocalDBDir _useLocalDBDir;
 
         private readonly DialogService _dialogService;
         private readonly OcrGeneralConfiguration _ocrConfiguration;
@@ -97,6 +110,7 @@ namespace Translumo.MVVM.ViewModels
             OcrGeneralConfiguration ocrConfiguration, TtsConfiguration ttsConfiguration, DialogService dialogService,
             ILogger<LanguagesSettingsViewModel> logger)
         {
+            this._logger = logger;
             var languages = languageService.GetAll(true)
                 .Select(lang => (lang.TranslationOnly, new DisplayLanguage(lang, GetLanguageDisplayName(lang))))
                 .ToArray();
@@ -111,11 +125,17 @@ namespace Translumo.MVVM.ViewModels
             this.TtsSettings = ttsConfiguration;
             this.TtsSettings.TtsLanguage = this.Model.TranslateToLang;
 
+            // TODO: Fill this up from dir listing
+            // AvaliableDBDirs should be initialized with non-empty directories available.
+            // The one that is selected previously should be assinged to _useLocalDBDir
+            this.AvailableDBDirs = new List<LocalDBDir>(){
+                new LocalDBDir(){Value="--root--"} // TODO: move the hardcoded special string to Constants
+            };
+            this.UseLocalDBDir = this.AvailableDBDirs[0]; // temporary
 
             this._languageService = languageService;
             this._dialogService = dialogService;
             this._ocrConfiguration = ocrConfiguration;
-            this._logger = logger;
         }
 
         private void OnProxySettingsClicked()

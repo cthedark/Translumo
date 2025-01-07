@@ -54,6 +54,21 @@
                 <ComboBox Width="130" Style="{DynamicResource MaterialDesignComboBox}"  ItemsSource="{Binding Source={StaticResource ttsSystems}}" SelectedItem="{Binding Path=TtsSystem}"></ComboBox>
                 <Label HorizontalAlignment="Stretch" Content="{DynamicResource Str.LangSettings.TtsSystem}" Style="{StaticResource ControlCaptionLabel}"/>
             </StackPanel>
+            <!-- Start Options for Local Database -->
+            <StackPanel Orientation="Horizontal">
+                <CheckBox Style="{DynamicResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Model.UseLocalDB}" />
+                <Label Content="{DynamicResource Str.LangSettings.UseLocalDB}" Style="{StaticResource ControlCaptionLabel}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Visibility="{Binding Model.UseLocalDB, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ComboBox Style="{StaticResource ComboBoxBase}" ItemsSource="{Binding Path=AvailableDBDirs}" SelectedItem="{Binding UseLocalDBDir}"></ComboBox>
+                <Label Content="{DynamicResource Str.LangSettings.UseLocalDBDir}" Style="{StaticResource ControlCaptionLabel}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <CheckBox Style="{DynamicResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Model.AppendToLocalDB}" 
+                    IsEnabled="{Binding Model.UseLocalDB}" />
+                <Label Content="{DynamicResource Str.LangSettings.AppendToLocalDB}" Style="{StaticResource ControlCaptionLabel}"/>
+            </StackPanel>
+            <!-- End Options for Local Database -->
             <GroupBox Style="{StaticResource MaterialDesignGroupBox}" Margin="0,20,0,0">
                 <GroupBox.Header>
                     <Label Style="{StaticResource SecondaryHeaderLabel}" Margin="0,-7,0,-7" Content="{DynamicResource Str.ProxySettings.Proxy}" />

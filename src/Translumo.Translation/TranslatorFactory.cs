@@ -39,5 +39,22 @@ namespace Translumo.Translation
                     throw new NotSupportedException();
             }
         }
+
+        public LocalDB LoadLocalDB(TranslationConfiguration config)
+        {
+            if (!config.UseLocalDB || string.IsNullOrEmpty(config.UseLocalDBDir)) {
+                return null;
+            }
+            var ldb = new LocalDB(config.UseLocalDBDir, _logger);
+
+            var success = ldb.SetLanguagePair(
+                _languageService.GetLanguageDescriptor(config.TranslateFromLang).IsoCode,
+                _languageService.GetLanguageDescriptor(config.TranslateToLang).IsoCode
+            );
+
+            if (success) return ldb;
+            
+            return null;
+        }
     }
 }

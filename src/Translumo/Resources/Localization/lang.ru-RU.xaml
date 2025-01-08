@@ -31,7 +31,7 @@
     <system:String x:Key="Str.LangSettings.TranslationLang">Язык перевода</system:String>
     <system:String x:Key="Str.LangSettings.Translator">Переводчик</system:String>
     <system:String x:Key="Str.LangSettings.UseLocalDB">Use local database</system:String>
-    <system:String x:Key="Str.LangSettings.UseLocalDBDir">Directory (within ./dbs):</system:String>
+    <system:String x:Key="Str.LangSettings.UseLocalDBDir">Directory (within ./db):</system:String>
     <system:String x:Key="Str.LangSettings.AppendToLocalDB">Write to local database for new translation</system:String>
     <system:String x:Key="Str.LangSettings.TtsSystem">Синтез речи TTS (предварительная версия)</system:String>
 

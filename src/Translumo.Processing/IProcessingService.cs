@@ -11,5 +11,7 @@ namespace Translumo.Processing
         void ProcessOnce(RectangleF captureArea);
 
         void StopProcessing();
+
+        void OnExit();
     }
 }

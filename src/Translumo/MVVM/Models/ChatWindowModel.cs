@@ -77,5 +77,10 @@ namespace Translumo.MVVM.Models
 
             _translationProcessingService.StopProcessing();
         }
+
+        public void OnExit()
+        {
+            _translationProcessingService.OnExit();
+        }
     }
 }

@@ -72,6 +72,8 @@ namespace Translumo
 
             var configurationStorage = _serviceProvider.GetService<ConfigurationStorage>();
             configurationStorage.SaveConfiguration();
+            var chatWindowModel = _serviceProvider.GetService<ChatWindowModel>();
+            chatWindowModel.OnExit();
         }
 
         protected override void OnStartup(StartupEventArgs e)

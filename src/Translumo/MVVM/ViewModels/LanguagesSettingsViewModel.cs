@@ -15,6 +15,7 @@ using Translumo.MVVM.Common;
 using Translumo.MVVM.Models;
 using Translumo.OCR.Configuration;
 using Translumo.OCR.WindowsOCR;
+using Translumo.Translation;
 using Translumo.Translation.Configuration;
 using Translumo.TTS;
 using Translumo.Utils;
@@ -125,13 +126,18 @@ namespace Translumo.MVVM.ViewModels
             this.TtsSettings = ttsConfiguration;
             this.TtsSettings.TtsLanguage = this.Model.TranslateToLang;
 
-            // TODO: Fill this up from dir listing
-            // AvaliableDBDirs should be initialized with non-empty directories available.
-            // The one that is selected previously should be assinged to _useLocalDBDir
-            this.AvailableDBDirs = new List<LocalDBDir>(){
-                new LocalDBDir(){Value="--root--"} // TODO: move the hardcoded special string to Constants
-            };
-            this.UseLocalDBDir = this.AvailableDBDirs[0]; // temporary
+            // Get all directories with files in them from the scanner and conver the results to the view layer models.
+            var localDBScanner = new LocalDBScanner(_logger);
+            var localDBs = localDBScanner.ScanForLocalDBDirectories();
+            this.AvailableDBDirs = new List<LocalDBDir>(){};
+            foreach (var localDB in localDBs)
+            {
+                var localDBDir = new LocalDBDir(localDB.Directory);
+                this.AvailableDBDirs.Add(localDBDir);
+                if (localDB.Directory.Equals(translationConfiguration.UseLocalDBDir)) {
+                    this.UseLocalDBDir = localDBDir;
+                }
+            }
 
             this._languageService = languageService;
             this._dialogService = dialogService;

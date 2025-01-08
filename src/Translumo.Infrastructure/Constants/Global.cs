@@ -15,6 +15,8 @@ namespace Translumo.Infrastructure.Constants
 
         public static string ModelsPath;
 
+        public static string LocalDBPath;
+
         static Global()
         {
 #if DEBUG
@@ -25,6 +27,7 @@ namespace Translumo.Infrastructure.Constants
             PythonPath = Path.Combine(AppPath, "Python");
             PipPath = Path.Combine(PythonPath, "Scripts/pip.exe");
             ModelsPath = Path.Combine(AppPath, "models");
+            LocalDBPath = Path.Combine(AppPath, "db");
         }
 
 

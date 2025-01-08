@@ -41,6 +41,7 @@ namespace Translumo.Processing
         private ITTSEngine _ttsEngine;
         private IEnumerable<IOCREngine> _engines;
         private ITranslator _translator;
+        private LocalDB _localDB;
         private TranslationConfiguration _translationConfiguration;
         private OcrGeneralConfiguration _ocrGeneralConfiguration;
         private TextProcessingConfiguration _textProcessingConfiguration;
@@ -79,6 +80,7 @@ namespace Translumo.Processing
             _textProcessingConfiguration = textConfiguration;
             _engines = InitializeEngines();
             _translator = _translatorFactory.CreateTranslator(_translationConfiguration);
+            InitLocalDB();
             _textProvider.Language = translationConfiguration.TranslateFromLang;
 
             _translationConfiguration.PropertyChanged += TranslationConfigurationOnPropertyChanged;
@@ -122,6 +124,8 @@ namespace Translumo.Processing
             _ctSource.Cancel();
 
             _chatTextMediator.SendText("Translation finished", TextTypes.Info);
+
+            FlushLocalDB();
         }
 
         // This creates the repeating task of translating.
@@ -257,8 +261,10 @@ namespace Translumo.Processing
                         sequentialText = false;
 
                         // Remove the portion that is already translated
-                        var filteredResult = FilterAndLogResult(bestDetected.Text);                        
-                        activeTranslationTasks.Add(TranslateTextAsync(filteredResult, iterationId));
+                        var filteredResult = FilterAndLogResult(bestDetected.Text);
+                        if (!string.IsNullOrWhiteSpace(filteredResult)){
+                            activeTranslationTasks.Add(TranslateTextAsync(filteredResult, iterationId));
+                        }
                     }
                 }
                 catch (CaptureException ex)
@@ -322,7 +328,7 @@ namespace Translumo.Processing
                     TextDetectionResult bestDetected = GetBestDetectionResult(taskResults, 3);
                     var filteredResult = FilterAndLogResult(bestDetected.Text);
                     if (!string.IsNullOrWhiteSpace(filteredResult)) {
-                        translationTask = TranslateTextAsync(FilterAndLogResult(bestDetected.Text), Guid.NewGuid());
+                        translationTask = TranslateTextAsync(filteredResult, Guid.NewGuid());
                     }
                 }
 
@@ -349,7 +355,32 @@ namespace Translumo.Processing
 
         private async Task TranslateTextAsync(string text, Guid iterationId)
         {
-            var translation = await _translator.TranslateTextAsync(text);
+            string translation = "";
+            // get translation from local db if it's provided
+            if (_localDB != null) {
+                translation =_localDB.GetTranslation(text);
+            }
+
+            // get translation from external translation service
+            if (string.IsNullOrWhiteSpace(translation)) {
+                int roundedTotalCharSentBefore = _totalCharSentForTranslation / CHAR_LENGTH_NOTICE;
+                _totalCharSentForTranslation += text.Length;
+                int roundedTotalCharSentAfter = _totalCharSentForTranslation / CHAR_LENGTH_NOTICE;
+                
+                _logger.LogTrace($"Adding translation request for '{text}'. Total characters sent to translation: {_totalCharSentForTranslation}.");
+                if (roundedTotalCharSentAfter > roundedTotalCharSentBefore) {
+                    _chatTextMediator.SendText($"({_totalCharSentForTranslation} characters sent to translation so far)", true);
+                }
+                translation = await _translator.TranslateTextAsync(text);
+
+                if (_translationConfiguration.AppendToLocalDB && !string.IsNullOrWhiteSpace(translation) && _localDB != null) {
+                    // user wants to record all the newly translated strings into local db.
+                    // The new translated string is not empty, so we append this result.
+                    _localDB.UpdateTranslation(text, translation);
+                }
+            }
+
+            // process translation result
             if (!string.IsNullOrWhiteSpace(translation) && !_textResultCacheService.IsTranslatedCached(translation, iterationId))
             {
                 Interlocked.Exchange(ref _lastTranslatedTextTicks, DateTime.UtcNow.Ticks);
@@ -420,6 +451,7 @@ namespace Translumo.Processing
             }
 
             _translator = _translatorFactory.CreateTranslator(_translationConfiguration);
+            InitLocalDB();
         }
 
         private void TtsConfigurationOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -437,7 +469,19 @@ namespace Translumo.Processing
             _engines = InitializeEngines();
         }
 
+        private void InitLocalDB() {
+            FlushLocalDB();
+            _localDB = _translatorFactory.LoadLocalDB(_translationConfiguration);
+        }
+
+        private void FlushLocalDB() {
+            if (_localDB != null && _translationConfiguration.AppendToLocalDB) {
+                _localDB.FlushUpdatedTranslations();
+            }
+        }
+
         private string FilterAndLogResult(string resultText) {
+            _logger.LogTrace($"FilterAndLogResult {resultText}");
             var textToBeTranslated = resultText; // textToBeTranslated is mutated whle resultText is not (important)
 
             // Remove the portion that is already translated from the last request (useful for "appending" text scroller common in games)
@@ -450,15 +494,6 @@ namespace Translumo.Processing
             if (string.IsNullOrWhiteSpace(textToBeTranslated)) {
                 _logger.LogTrace($"empty string to translate - skipping;");
                 return "";
-            }
-                        
-            int roundedTotalCharSentBefore = _totalCharSentForTranslation / CHAR_LENGTH_NOTICE;
-            _totalCharSentForTranslation += textToBeTranslated.Length;
-            int roundedTotalCharSentAfter = _totalCharSentForTranslation / CHAR_LENGTH_NOTICE;
-            
-            _logger.LogTrace($"Adding translation request for '{textToBeTranslated}'. Total characters sent to translation: {_totalCharSentForTranslation}.");
-            if (roundedTotalCharSentAfter > roundedTotalCharSentBefore) {
-                _chatTextMediator.SendText($"({_totalCharSentForTranslation} characters sent to translation so far)", true);
             }
 
             return textToBeTranslated;
@@ -473,10 +508,17 @@ namespace Translumo.Processing
 
         public void Dispose()
         {
+            _logger.LogTrace("TranslationProcessingService Dispose");
+            FlushLocalDB();
             _ttsEngine.Dispose();
             _textProvider.Dispose();
             _capturer?.Dispose();
             _onceTimeCapturer?.Dispose();
+        }
+
+        public void OnExit()
+        {
+            Dispose();
         }
 
         private enum IterationType : byte

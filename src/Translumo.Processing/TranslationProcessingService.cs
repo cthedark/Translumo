@@ -143,8 +143,6 @@ namespace Translumo.Processing
                 ? (int)_textProcessingConfiguration.AutoClearTextsDelayMs * -1
                 : int.MaxValue * -1;
 
-            string lastDetectedText = "";
-
             TextDetectionResult GetSecondaryCheckText(byte[] screen)
             {
                 Mat grayScaleScreen = ImageHelper.ToGrayScale(screen);
@@ -261,8 +259,6 @@ namespace Translumo.Processing
                         // Remove the portion that is already translated
                         var filteredResult = FilterAndLogResult(bestDetected.Text);                        
                         activeTranslationTasks.Add(TranslateTextAsync(filteredResult, iterationId));
-                        
-                        lastDetectedText = bestDetected.Text;
                     }
                 }
                 catch (CaptureException ex)
@@ -442,16 +438,13 @@ namespace Translumo.Processing
         }
 
         private string FilterAndLogResult(string resultText) {
-            // Remove the portion that is already translated
-            var textToBeTranslated = resultText;
+            var textToBeTranslated = resultText; // textToBeTranslated is mutated whle resultText is not (important)
+
+            // Remove the portion that is already translated from the last request (useful for "appending" text scroller common in games)
             if (!string.IsNullOrWhiteSpace(_lastDetectedText)) {
                 textToBeTranslated = textToBeTranslated.Replace(_lastDetectedText, "");
             }
-
-            // Remove non-language characters common in japanese visual novels (just in case it confuses the translators.)
-            textToBeTranslated = textToBeTranslated
-                .Replace("「", "").Replace("」", "").Replace("。", ".").Replace("、", ",")
-                .Replace("ー", "-").Replace("ー", "-");
+            _lastDetectedText = resultText;
 
             // Nothing to translate (complete duplicate from the last query)
             if (string.IsNullOrWhiteSpace(textToBeTranslated)) {

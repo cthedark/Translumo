@@ -27,7 +27,7 @@
 <ul>
 <li>Added a way to manually translate by a button press while using the selected translation area</li>
 <li>Removed the defunct Papago option</li>
-<li>Added a way to interface with a locally running server assuming <a href="https://github.com/LibreTranslate/LibreTranslate" target="_blank">LibreTranslate</a>). But it can be any server. I personally use a flask server (<a href="https://github.com/cthedark/flask-decoder-encoder-model-translate" target="_blank">example code</a>) </li>
+<li>Added a way to interface with a locally running server assuming the API schema of <a href="https://github.com/LibreTranslate/LibreTranslate" target="_blank">LibreTranslate</a>. But it can be any server. I personally use a flask server (<a href="https://github.com/cthedark/flask-decoder-encoder-model-translate" target="_blank">example code</a>) </li>
 <li>Added an option to record all translations and reuse them without hitting the service again. This means one can also edit the translated strings to be used later by a different user, or we can also turn these into training data.</li>
 </ul>
 <h1>Planned Features</a></h1>
@@ -44,10 +44,12 @@
   <li>5 GB free storage space <i>(for mode with EasyOCR)</i></li>
   <li>Nvidia GPU with CUDA SDK 11.8 support (GTX 750, 8xxM, 9xx series or later) <i>(for mode with EasyOCR)</i></li>
 </ul>
-<h1>How to use</h1>
+<h1>Demonstration</h1>
 <img src="https://github.com/cthedark/Translumo/blob/master/docs/cthedark-fork-demo.gif">
+<img src="https://github.com/cthedark/Translumo/blob/master/docs/cthedark-fork-demo2.gif">
+<h1>How to use</h1>
 <ol>
-  <li>Open the Settings</li>
+  <li>Open the Settings (alt+g by default)</li>
   <li>Select Languages->Source language and Languages->Translation language</li>
   <li>Select Text recognition->Engines (please check Usage tips for recommendation modes)</li>
   <li>Select capture area</li>

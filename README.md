@@ -6,7 +6,7 @@
 </p>
 <!-- <p align="center"><b>EN</b> | <a href="docs/README-RU.md"><b>RU</b></a></p> -->
 <p align="center">Advanced screen translator. <b>Translumo</b> is able to detect and translate appearing in the selected area text in real-time (e.g. subtitles).</p>
-<p align="center">Fork from <a href="https://github.com/Danily07/Translumo">Danily07</a></p>
+<p align="center">Fork from <a href="https://github.com/Danily07/Translumo">Danily07</a> - the main purpose is to make this work locally and better optimized for playing games/visual novels</p>
 <h1>Main features</h1>
 <ul>
   <li><b>High text recognition precision</b></li>
@@ -23,6 +23,19 @@
   <li><b>Available recognition languages:</b> English, Russian, Japanese, Chinese (simplified), Korean</li>
   <li><b>Available translation languages:</b> English, Russian, Japanese, Chinese (simplified), Korean, French, Spanish, German, Portuguese, Italian, Vietnamese, Thai, Turkish, Arabic</li>
 </ul>
+<h1>Differences from <a href="https://github.com/Danily07/Translumo">the original</a></h1>
+<ul>
+<li>Added a way to manually translate by a button press while using the selected translation area</li>
+<li>Removed the defunct Papago option</li>
+<li>Added a way to interface with a locally running server assuming <a href="https://github.com/LibreTranslate/LibreTranslate" target="_blank">LibreTranslate</a>). But it can be any server. I personally use a flask server (<a href="https://github.com/cthedark/flask-decoder-encoder-model-translate" target="_blank">example code</a>) </li>
+<li>Added an option to record all translations and reuse them without hitting the service again. This means one can also edit the translated strings to be used later by a different user, or we can also turn these into training data.</li>
+</ul>
+<h1>Planned Features</a></h1>
+<ul>
+<li>Add back Papago option using their new paid cloud service (API key is needed).</li>
+<li>More UX optimization around running games.</li>
+<li>Korean Translation</li>
+</ul>
 <h1>System requirements</h1>
 <ul>
   <li>Windows 10 build 19041 (20H1) / Windows 11</li>
@@ -32,7 +45,7 @@
   <li>Nvidia GPU with CUDA SDK 11.8 support (GTX 750, 8xxM, 9xx series or later) <i>(for mode with EasyOCR)</i></li>
 </ul>
 <h1>How to use</h1>
-<img src="https://github.com/Danily07/Translumo/blob/7f4a73ffba0e5a0090ea0bfc3d72acb99832a0f4/docs/preview-EN.gif">
+<img src="https://github.com/cthedark/Translumo/blob/master/docs/cthedark-fork-demo.gif">
 <ol>
   <li>Open the Settings</li>
   <li>Select Languages->Source language and Languages->Translation language</li>

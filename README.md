@@ -45,8 +45,8 @@
   <li>Nvidia GPU with CUDA SDK 11.8 support (GTX 750, 8xxM, 9xx series or later) <i>(for mode with EasyOCR)</i></li>
 </ul>
 <h1>Demonstration</h1>
-<img src="https://github.com/cthedark/Translumo/blob/master/docs/cthedark-fork-demo.gif">
-<img src="https://github.com/cthedark/Translumo/blob/master/docs/cthedark-fork-demo2.gif">
+<img src="https://github.com/cthedark/Translumo/blob/main/docs/cthedark-fork-demo.gif">
+<img src="https://github.com/cthedark/Translumo/blob/main/docs/cthedark-fork-demo2.gif">
 <h1>How to use</h1>
 <ol>
   <li>Open the Settings (alt+g by default)</li>

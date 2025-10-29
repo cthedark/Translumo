@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Class="Translumo.MVVM.Views.SettingsView"
         xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
         mc:Ignorable="d"
-        Title="{DynamicResource Str.Title.SettingWindow}" Height="450" Width="780"     
+        Title="{DynamicResource Str.Title.SettingWindow}" Height="500" Width="1000"     
         xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:viewModels="clr-namespace:Translumo.MVVM.ViewModels"

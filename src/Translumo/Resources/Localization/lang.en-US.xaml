@@ -32,6 +32,9 @@
     <system:String x:Key="Str.LangSettings.Translator">Translator</system:String>
     <system:String x:Key="Str.LangSettings.UseLocalDB">Use local database</system:String>
     <system:String x:Key="Str.LangSettings.UseLocalDBDir">Directory (within ./db):</system:String>
+    <system:String x:Key="Str.LangSettings.LocalServerURL">For Local translator - API Endpoint (e.g. http://localhost:1234/v1/chat/completions for LLM Studio)</system:String>
+    <system:String x:Key="Str.LangSettings.LocalServerPayload">JSON Payload. Use placeholder "[content]" for actual text to be translated.</system:String>
+    <system:String x:Key="Str.LangSettings.LocalServerResponsePath">JSON Path for the translated string. (e.g. choices[0].message.content)</system:String>
     <system:String x:Key="Str.LangSettings.AppendToLocalDB">Write to local database for new translation</system:String>
     <system:String x:Key="Str.LangSettings.TtsSystem">Text to speech system (experimental feature)</system:String>
 

@@ -83,6 +83,37 @@ namespace Translumo.MVVM.ViewModels
             }
         }
 
+        public LocalServerURL LocalServerURL
+        {
+            get => _localServerURL;
+            set
+            {
+                _localServerURL = value;
+                Model.LocalServerURL = _localServerURL.Value;
+            }
+        }
+        
+        public LocalServerPayload LocalServerPayload
+        {
+            get => _localServerPayload;
+            set
+            {
+                _localServerPayload = value;
+                Model.LocalServerPayload = _localServerPayload.Value;
+            }
+        }
+        
+        // LocalServerResponsePath
+        public LocalServerResponsePath LocalServerResponsePath
+        {
+            get => _localServerResponsePath;
+            set
+            {
+                _localServerResponsePath = value;
+                Model.LocalServerResponsePath = _localServerResponsePath.Value;
+            }
+        }
+
         public LocalDBDir UseLocalDBDir
         {
             get => _useLocalDBDir;
@@ -101,6 +132,12 @@ namespace Translumo.MVVM.ViewModels
         private ObservableCollection<ProxyCardItem> _proxyCollection;
         private bool _proxySettingsIsOpened;
         private LocalDBDir _useLocalDBDir;
+
+        private LocalServerURL _localServerURL;
+
+        private LocalServerPayload _localServerPayload;
+
+        private LocalServerResponsePath _localServerResponsePath;
 
         private readonly DialogService _dialogService;
         private readonly OcrGeneralConfiguration _ocrConfiguration;

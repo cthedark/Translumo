@@ -1,5 +1,6 @@
 namespace Translumo.Translation.Local
 {
+// This is now deprecated since the request itself is a free form text that is user-configurable.
     internal static class LocalRequestFactory
     {
         public static LocalRequest CreateRequest(LocalContainer container, string text, string sourceLangCode, string targetLangCode)

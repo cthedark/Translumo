@@ -72,6 +72,36 @@ namespace Translumo.Translation.Configuration
             }
         }
 
+        // For Local Translator, the endpoint to make the server call to.
+        public string LocalServerURL
+        {
+            get => _localServerURL;
+            set
+            {
+                SetProperty(ref _localServerURL, value);
+            }
+        }
+
+        // For Local Translator, the payload to send to the server with a placeholder to replace with source text.
+        public string LocalServerPayload
+        {
+            get => _localServerPayload;
+            set
+            {
+                SetProperty(ref _localServerPayload, value);
+            }
+        }
+
+        // JSON Path to find the translated text.
+        public string LocalServerResponsePath
+        {
+            get => _localServerResponsePath;
+            set
+            {
+                SetProperty(ref _localServerResponsePath, value);
+            }
+        }
+
         // If this is true, newly translated sentences will be appended to the local DB, updating it.
         public bool AppendToLocalDB
         {
@@ -88,6 +118,9 @@ namespace Translumo.Translation.Configuration
         private List<Proxy> _proxySettings = new List<Proxy>();
         private bool _useLocalDB;
         private string _useLocalDBDir;
+        private string _localServerURL;
+        private string _localServerPayload;
+        private string _localServerResponsePath;
         private bool _appendToLocalDB;
     }
 }

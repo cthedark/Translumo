@@ -51,6 +51,11 @@ Fork from [Danily07](https://github.com/Danily07/Translumo) - the main purpose i
     * How to find the value. Use the standard JSON object path format like `choices[0].message.content`.
   * Added an option to record all translations and reuse them without hitting the service again. This means one can also edit the translated strings to be used later by a different user, or we can also turn these into training data.
 
+# Demonstration
+
+![Fork Demo 1](https://github.com/cthedark/Translumo/blob/main/docs/cthedark-fork-demo.gif)
+![Fork Demo 2](https://github.com/cthedark/Translumo/blob/main/docs/cthedark-fork-demo2.gif)
+
 # Planned Features
 
   * Add back Papago option using their new paid cloud service (API key is needed).

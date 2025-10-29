@@ -8,6 +8,8 @@ using Translumo.Translation.Configuration;
 using Translumo.Translation.Exceptions;
 using Translumo.Utils.Http;
 using System.Text.RegularExpressions;
+using System.Text.Json.Nodes;
+using System.Text.Encodings.Web;
 
 namespace Translumo.Translation.Local
 {
@@ -38,10 +40,15 @@ namespace Translumo.Translation.Local
 
         protected override async Task<string> TranslateTextInternal(LocalContainer container, string sourceText)
         {
-            var dataIn = _localServerPayload.Replace(_placeholder_text, sourceText);
-            _logger.LogTrace($"requesting translation from locally run server with body '{dataIn}' and endpoint '{_localServerURL}'");
+            string dataIn = _localServerPayload.Replace(_placeholder_text, sourceText);
+            string sanitizedDataIn = SanitizeJSON(dataIn);
 
-            var response = await container.Reader.RequestWebDataAsync(_localServerURL, HttpMethods.POST, dataIn, true).ConfigureAwait(false);
+            // As a way to sanitize this, we will serialize and deserialize it.
+
+
+            _logger.LogTrace($"requesting translation from locally run server with body '{sanitizedDataIn}' and endpoint '{_localServerURL}'");
+
+            var response = await container.Reader.RequestWebDataAsync(_localServerURL, HttpMethods.POST, sanitizedDataIn, true).ConfigureAwait(false);
 
             if (response.IsSuccessful)
             {
@@ -50,7 +57,7 @@ namespace Translumo.Translation.Local
                 if (foundVal != null)
                 {
                     return foundVal.Value.GetString();
-                } 
+                }
                 else
                 {
                     _logger.LogTrace("failed to parse any non-zero string value");
@@ -59,9 +66,8 @@ namespace Translumo.Translation.Local
             }
             else
             {
-                throw new TranslationException($"Bad response by translator: '{response.Body}'");
+                throw new TranslationException($"Bad response by translator: '{response.Body}' inner exception? '{response.InnerException}'");
             }
-            
         }
 
         protected override IList<LocalContainer> CreateContainers(TranslationConfiguration configuration)
@@ -70,6 +76,56 @@ namespace Translumo.Translation.Local
             result.Add(new LocalContainer(isPrimary: true));
 
             return result;
+        }
+
+        private static readonly JsonSerializerOptions SanitizeOptions = new JsonSerializerOptions
+        {
+            // Setting the Encoder to JavaScriptEncoder.Default forces all non-ASCII
+            // characters (including '、', 'é', 'ñ', etc.) to be written as \uXXXX
+            // Unicode escape sequences, which is highly compatible with strict servers.
+            Encoder = JavaScriptEncoder.Default,
+
+            // Optional: Keep the output JSON compact (no extra spaces)
+            WriteIndented = false
+        };
+
+        public string SanitizeJSON(string jsonString)
+        {
+            if (string.IsNullOrWhiteSpace(jsonString))
+            {
+                // Handle null or empty input gracefully
+                return "{}";
+            }
+
+            try
+            {
+                // Optional Safety Step: Remove carriage returns and newlines from the input
+                // string just in case the parser is overly strict. This is often unnecessary
+                // if the JSON is correctly formatted, but provides extra robustness.
+                string compactInput = jsonString
+                    .Replace("\r\n", "") // Standard Windows line ending
+                    .Replace("\n", "")   // Standard Unix/Linux line ending
+                    .Replace("\r", "");   // Standard Mac line ending (less common)
+                    
+                // 1. Parse the input string into a generic JSON object (JsonNode).
+                // This step will throw an exception if the input is not valid JSON.
+                var jsonNode = JsonNode.Parse(compactInput);
+
+                // 2. Re-serialize the object using the specified options.
+                // This step applies the JavaScriptEncoder.Default setting,
+                // which escapes characters like '、' to '\u3001'.
+                string sanitizedJson = jsonNode.ToJsonString(SanitizeOptions);
+
+                return sanitizedJson;
+            }
+            catch (JsonException ex)
+            {
+                // Log the parsing error if needed, but return an error indicator.
+                _logger.LogWarning($"Error parsing JSON input: {ex.Message}");
+                // Return an empty or error-indicating JSON object as a fallback
+                return "{\"error\": \"Invalid JSON input\"}";
+            }
+    
         }
         
         /// <summary>

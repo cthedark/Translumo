@@ -78,6 +78,11 @@ namespace Translumo.Processing.TextProcessing
             { "９", "9" },
         };
 
+        public IReadOnlyDictionary<string, string> GetReplacers()
+        {
+            return _replacers;
+        }
+
         public TextValidityPredictor(IPredictor<InputTextPrediction, OutputTextPrediction> validityPredictor, LanguageService languageService, 
             ILogger<TextValidityPredictor> logger)
         {
